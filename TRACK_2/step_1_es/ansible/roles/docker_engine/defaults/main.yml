@@ -1,0 +1,12 @@
+---
+# defaults file for docker_engine
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+
+docker_dependencies:
+  - dnf-plugins-core
+  - python3-requests

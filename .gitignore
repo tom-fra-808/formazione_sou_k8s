@@ -1,0 +1,7 @@
+.DS_Store
+.vagrant/
+*.retry
+.env
+*.pem
+*.key
+*.log

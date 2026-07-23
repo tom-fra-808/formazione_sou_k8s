@@ -1,0 +1,7 @@
+---
+# defaults file for jenkins_controller
+nome_container: jenkins-controller
+immagine_docker: jenkins/jenkins:2.568.1-jdk21
+porta_host: 8080
+volume_docker: jenkins_home
+restart_policy: unless-stopped

@@ -1,0 +1,7 @@
+---
+# defaults file for jenkins_agent
+jenkins_agent_name: jenkins-agent
+jenkins_agent_immagine: jenkins/inbound-agent:jdk21
+jenkins_agent_workdir: /home/jenkins/agent
+jenkins_agent_URL_controller: http://172.20.0.10:8080/
+jenkins_agent_restart_policy: unless-stopped

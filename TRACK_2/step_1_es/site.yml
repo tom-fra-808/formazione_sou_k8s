@@ -1,0 +1,10 @@
+---
+- name: configurazione jenkins
+  hosts: all
+  become: true
+
+  roles:
+    - ansible/roles/docker_engine
+    - ansible/roles/docker_network
+    - ansible/roles/jenkins_controller
+    - ansible/roles/jenkins_agent

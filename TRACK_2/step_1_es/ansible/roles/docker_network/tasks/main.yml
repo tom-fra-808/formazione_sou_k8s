@@ -1,0 +1,10 @@
+---
+# tasks file for docker_network
+- name: creo rete docker
+  community.docker.docker_network:
+    name: "{{ jenkins_network_name }}"
+    driver: "{{ jenkins_network_driver }}"
+    ipam_config:
+      - subnet: "{{ jenkins_network_subnet }}"
+        gateway: "{{ jenkins_network_gateway }}"
+    appends: true

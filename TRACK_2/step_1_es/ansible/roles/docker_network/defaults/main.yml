@@ -1,0 +1,6 @@
+---
+# defaults file for docker_network
+nome_rete: jenkins_network
+driver_rete: bridge
+subnet_rete: 172.20.0.0/24
+gateway_rete: 172.20.0.1

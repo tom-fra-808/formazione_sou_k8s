@@ -1,0 +1,22 @@
+---
+# tasks file for jenkins_agent
+- name: configurazione jenkins-agent
+  community.docker.docker_container:
+    name: "{{ jenkins_agent_name }}"
+    image: "{{ jenkins_agent_immagine }}"
+    state: started
+    networks:
+      - name: "{{ jenkins_network_name }}"
+        ipv4_address: "{{ jenkins_agent_ip }}"
+
+    env:
+      JENKINS_URL: "{{ jenkins_agent_URL_controller }}"
+      JENKINS_SECRET: "{{ jenkins_agent_secret }}"
+      JENKINS_AGENT_NAME: "{{ jenkins_agent_name }}"
+      JENKINS_AGENT_WORKDIR: "{{ jenkins_agent_workdir }}"
+      JENKINS_WEB_SOCKET: "true"
+    
+    restart_policy: "{{ jenkins_agent_restart_policy }}"
+    
+  
+  no_log: true

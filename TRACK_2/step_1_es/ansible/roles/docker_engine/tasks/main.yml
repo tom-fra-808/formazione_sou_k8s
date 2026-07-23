@@ -1,0 +1,30 @@
+---
+- name: aggiorno dep
+  ansible.builtin.dnf:
+    name: "{{ docker_dependencies }}"
+    state: present
+
+- name: scarico repository
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/rhel/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: "0644"
+
+- name: installo docker
+  ansible.builtin.dnf:
+    name: "{{ docker_packages }}"
+    state: present
+    
+- name: faccio partire docker
+  ansible.builtin.systemd_service:
+    name: docker
+    state: started
+    enabled: true
+  
+- name: aggiungo utente vagrant a gruppo docker
+  ansible.builtin.user:
+    user: vagrant
+    groups:
+      - docker
+    append: true
+    state: present 

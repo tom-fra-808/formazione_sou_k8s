@@ -1,0 +1,17 @@
+---
+# tasks file for jenkins_controller
+- name: creo container 
+  community.docker.docker_container:
+    name: "{{ nome_container }}"
+    image: "{{ immagine_docker }}"
+    published_ports:
+      - "{{ porta_host }}:8080"
+    volumes:
+      - "{{ volume_docker }}:/var/jenkins_home"
+    restart_policy: "{{ restart_policy }}"
+    networks:
+      - name: "{{ jenkins_network_name }}"
+        ipv4_address: "{{ jenkins_controller_ip }}"
+    
+    state: started
+    

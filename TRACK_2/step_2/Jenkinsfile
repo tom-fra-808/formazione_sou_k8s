@@ -56,7 +56,13 @@ pipeline {
                     } else if (env.BRANCH_NAME == 'master') {
                         env.IMAGE_TAG = 'latest'
                     } else if (env.BRANCH_NAME == 'develop') {
-                        env.IMAGE_TAG = "develop-${env.GIT_COMMIT}"
+                        def gitSha = sh(
+                            script: 'git rev-parse HEAD',
+                            returnStdout: true
+                        ).trim()
+
+                        env.IMAGE_TAG = "develop-${gitSha}"
+                        }    
                     } else {
                         error("Branch non supportato: ${env.BRANCH_NAME}")
                     }

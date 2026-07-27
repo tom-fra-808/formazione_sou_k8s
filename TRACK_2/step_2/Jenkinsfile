@@ -1,7 +1,37 @@
-pipeline {
-    agent {
-        label 'jenkins-agent'
+def buildAndPushTag(Map args) {
+    def defaults = [
+        registryUrl: 'https://index.docker.io/v1/',
+        credentialsId: 'dockerhub-credentials',
+        dockerfileDir: '.',
+        dockerfileName: 'Dockerfile',
+        buildArgs: '',
+        pushLatest: true
+    ]
+
+    args = defaults + args
+    def imageRef = "${args.image}:${args.buildTag}"
+
+    docker.withRegistry(args.registryUrl, args.credentialsId) {
+        def image = docker.build(
+            imageRef,
+            "${args.buildArgs} -f ${args.dockerfileName} ${args.dockerfileDir}".trim()
+        )
+
+        image.push()
+
+        if (args.pushLatest && args.buildTag != 'latest') {
+            image.push('latest')
+            sh "docker rmi --force ${args.image}:latest"
+        }
+
+        sh "docker rmi --force ${imageRef}"
     }
+
+    return imageRef
+}
+
+pipeline {
+    agent { label 'jenkins-agent' }
 
     options {
         skipDefaultCheckout(true)
@@ -9,8 +39,6 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'tommasofranco/flask-app'
-        DOCKER_REGISTRY = 'https://index.docker.io/v1/'
-        DOCKERHUB_CREDENTIALS = 'dockerhub-credentials'
     }
 
     stages {
@@ -20,7 +48,7 @@ pipeline {
             }
         }
 
-        stage('Calcola tag immagine') {
+        stage('Calcola tag') {
             steps {
                 script {
                     if (env.TAG_NAME) {
@@ -32,35 +60,21 @@ pipeline {
                     } else {
                         error("Branch non supportato: ${env.BRANCH_NAME}")
                     }
-
-                    echo "Immagine: ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
                 }
             }
         }
 
-        stage('Build immagine') {
+        stage('Build e push') {
             steps {
                 dir('TRACK_2/step_2/app') {
                     script {
-                        docker.build(
-                            "${env.IMAGE_NAME}:${env.IMAGE_TAG}",
-                            '.'
+                        def result = buildAndPushTag(
+                            image: env.IMAGE_NAME,
+                            buildTag: env.IMAGE_TAG,
+                            pushLatest: (env.BRANCH_NAME == 'master')
                         )
-                    }
-                }
-            }
-        }
 
-        stage('Push immagine') {
-            steps {
-                script {
-                    docker.withRegistry(
-                        env.DOCKER_REGISTRY,
-                        env.DOCKERHUB_CREDENTIALS
-                    ) {
-                        docker.image(
-                            "${env.IMAGE_NAME}:${env.IMAGE_TAG}"
-                        ).push()
+                        echo "Immagine pubblicata: ${result}"
                     }
                 }
             }

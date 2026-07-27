@@ -62,7 +62,6 @@ pipeline {
                         ).trim()
 
                         env.IMAGE_TAG = "develop-${gitSha}"
-                        }    
                     } else {
                         error("Branch non supportato: ${env.BRANCH_NAME}")
                     }

@@ -1,0 +1,2 @@
+Scrivere una pipeline Jenkins dichiarativa che accetti il parametro ENVIRONMENT e che abbia due stages PRODUCTION e DEVELOPMENT che vengano eseguiti in base al valore del parametro. E' sufficiente fare una echo a video del valore del parametro.
+

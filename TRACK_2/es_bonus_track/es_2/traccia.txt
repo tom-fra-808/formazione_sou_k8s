@@ -1,0 +1,2 @@
+Scrivere una pipeline Jenkins che esegua una build solo dal lunedi al venerdì e scriva un messaggio di warning il sabato e la domenica.
+La data col giorno della settimana non deve essere ricavata da un comando shell ma utilizzando l'oggetto "Date" fornito dal linguaggio Groovy.

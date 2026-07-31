@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Controllo data'){
+            when {
+                expression {
+                    new Date().format('u').toInteger() >= 6
+                }
+            }
+
+            steps {
+                error 'Warning: oggi è sabato o domenica. Build bloccata'
+            }
+        }
+
+        stage('Build-ops') {
+            when {
+                expression {
+                    new Date().format('u').toInteger() <= 5
+                }
+            }
+
+            steps {
+                echo 'Giorno lavorativo: eseguo la build dev-ops'
+            }
+        }
+    }
+}

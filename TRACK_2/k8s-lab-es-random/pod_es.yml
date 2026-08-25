@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: nginx-man
+  namespace: web-lab
+  labels:
+    app: nginx-man
+    environment: lab
+  
+spec:
+  containers:
+    - name: nginx
+      image: nginx:alpine
+  restartPolicy: Always
+
+
+

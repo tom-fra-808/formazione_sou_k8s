@@ -68,6 +68,6 @@ echo 'Giorno lavorativo: eseguo la build dev-ops'
 > `error` interrompe la pipeline e imposta il risultato su `FAILED`. Uno stage
 > indicato come `skipped`, invece, è stato semplicemente saltato dal `when`.
 
-## Avvio dellam Pipeline
+## Avvio della Pipeline
 
 Per eseguire la pipeline sull'agent possiamo o incollare direttamente la pipeline nel suo apposito box dentro Jenkins oppure salvare il Jenkinsfile sulla repo Git e dentro Jenkins selezionare **"Pipeline script from SCM"**.

@@ -74,7 +74,7 @@ echo "${params.ENVIRONMENT}"
 > errore.
 
 
-## Avvio dellam Pipeline
+## Avvio della Pipeline
 
 Per eseguire la pipeline sull'agent possiamo o incollare direttamente la pipeline nel suo apposito box dentro Jenkins oppure salvare il Jenkinsfile sulla repo Git e dentro Jenkins selezionare **"Pipeline script from SCM"**.
 

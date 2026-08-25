@@ -1,0 +1,110 @@
+pipeline {
+    agent {
+        label 'mac-k8s'
+    }
+
+    options {
+        skipDefaultCheckout(true)
+        disableConcurrentBuilds()
+        timeout(time: 5, unit: 'MINUTES')
+    }
+
+    parameters {
+        string(
+            name: 'IMAGE_TAG',
+            defaultValue: 'latest',
+            description: 'Tag Docker da distribuire'
+        )
+    }
+
+    environment {
+        PATH = '/Users/tommaso/.local/bin:/usr/local/bin:/usr/bin:/bin'
+        KUBECONFIG = '/Users/tommaso/.kube/config'
+
+        CHART_PATH = 'TRACK_2/step_3/charts/flask-app'
+        RELEASE_NAME = 'flask-app'
+        K8S_NAMESPACE = 'formazione-sou'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Validate Chart') {
+            steps {
+                sh '''
+                    set -eu
+
+                    helm lint "$CHART_PATH"
+
+                    helm template \
+                        "$RELEASE_NAME" \
+                        "$CHART_PATH" \
+                        --namespace "$K8S_NAMESPACE" \
+                        --set-string image.tag="$IMAGE_TAG" \
+                        > /dev/null
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    set -eu
+
+                    helm upgrade --install \
+                        "$RELEASE_NAME" \
+                        "$CHART_PATH" \
+                        --namespace "$K8S_NAMESPACE" \
+                        --create-namespace \
+                        --set-string image.tag="$IMAGE_TAG" \
+                        --wait \
+                        --timeout 2m
+                '''
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                sh '''
+                    set -eu
+
+                    helm status "$RELEASE_NAME" \
+                        --namespace "$K8S_NAMESPACE"
+
+                    kubectl rollout status \
+                        "deployment/$RELEASE_NAME" \
+                        --namespace "$K8S_NAMESPACE" \
+                        --timeout=120s
+
+                    kubectl get deployment,pods,service \
+                        --namespace "$K8S_NAMESPACE" \
+                        --selector "app.kubernetes.io/instance=$RELEASE_NAME" \
+                        --output wide
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deploy Helm completato correttamente.'
+        }
+
+        failure {
+            sh '''
+                kubectl get deployment,pods,service \
+                    --namespace "$K8S_NAMESPACE" \
+                    --output wide || true
+
+                kubectl get events \
+                    --namespace "$K8S_NAMESPACE" \
+                    --sort-by=.lastTimestamp |
+                    tail -n 20 || true
+            '''
+        }
+    }
+}

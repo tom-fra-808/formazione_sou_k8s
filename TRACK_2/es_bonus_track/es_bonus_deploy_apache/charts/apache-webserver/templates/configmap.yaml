@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: apache-ssl-config
+data:
+    ssl.conf: |
+        Listen 443
+        LoadModule ssl_module modules/mod_ssl.so
+            <VirtualHost *:443>
+                ServerName {{ (index .Values.ingress.hosts 0).host }}
+                DocumentRoot "/usr/local/apache2/htdocs"
+
+                <Directory "/usr/local/apache2/htdocs">
+                    Require all granted
+                </Directory>
+                    SSLEngine on
+                    SSLCertificateFile "/usr/local/apache2/conf/tls/tls.crt"
+                    SSLCertificateKeyFile "/usr/local/apache2/conf/tls/tls.key"
+            </VirtualHost>

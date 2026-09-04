@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache
+  namespace: webserver-apache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apache
+
+  template:
+    metadata:
+      labels:
+        app: apache
+    spec:
+      containers:
+        - name: apache
+          image: httpd:2.4
+          command:
+            - /usr/local/bin/httpd-foreground
+          args:
+            - "-c"
+            - "Include /usr/local/apache2/conf/extra/ssl.conf"
+          ports:
+            - containerPort: 443
+          volumeMounts:
+            - name: tls
+              mountPath: /usr/local/apache2/conf/tls
+              readOnly: true
+
+            - name: ssl-config
+              mountPath: /usr/local/apache2/conf/extra/ssl.conf
+              subPath: ssl.conf
+              readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: apache-tls
+
+        - name: ssl-config
+          configMap:
+            name: apache-ssl-config

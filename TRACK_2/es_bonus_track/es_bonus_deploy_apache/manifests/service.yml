@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: apache-service
+  namespace: webserver-apache
+
+spec:
+  type: ClusterIP
+  selector:
+    app: apache
+  ports:
+    - port: 443
+      targetPort: 443
